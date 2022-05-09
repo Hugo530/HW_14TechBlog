@@ -1,8 +1,8 @@
 const commentFormHandler = async function(event) {
   event.preventDefault();
-
-  const postId = document.querySelector('input[name="post-id"]').value;
-  const body = document.querySelector('textarea[name="comment-body"]').value;
+  
+  const currentUrl = window.location.href;
+  const postId = currentUrl.substring(currentUrl.lastIndexOf('/' ) +1 );
 
   if (body) {
     await fetch('/api/comment', {
