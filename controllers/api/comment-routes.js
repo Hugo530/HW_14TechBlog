@@ -38,7 +38,7 @@ router.put('/:id', withAuth, async (req, res) => {
       res.status(200).end();
 
     }else {
-      res.status(404).end.();
+      res.status(404).end();
     }
 
   } catch (err) {
