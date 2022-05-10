@@ -1,6 +1,37 @@
 const router = require('express').Router();
-const { Post } = require('../../models');
+const req = require('express/lib/request');
+const res = require('express/lib/response');
+const { Post , User, Comment } = require('../../models');
 const withAuth = require('../../utils/auth');
+
+
+router.get('/', async (req, res) =>{
+  try {
+    const postData = await Post.findAll ({
+      include: [{all: true, nested: true}],
+    });
+    res.status(200).json(postData);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
+
+router.get('/post/:id', async (req, res) => {
+  try {
+    const postData = await Post.findAll({
+      include: [{all: true, nested: true}],
+      where: {
+        id: req.params.id,
+      },
+    });
+    res.status(200).json(postData);
+
+  } catch (err) {
+    res.status(500).json(err);
+  }
+
+});
+
 
 router.post('/', withAuth, async (req, res) => {
   const body = req.body;
@@ -38,15 +69,17 @@ router.delete('/:id', withAuth, async (req, res) => {
         id: req.params.id,
       },
     });
+    
+    if (!affected) {
+      res.status(404).json({message:'Sorry no post with that ID! found'}).end();
 
-    if (affectedRows > 0) {
-      res.status(200).end();
-    } else {
-      res.status(404).end();
     }
+    res.status(200).json({message:`Post id ${req.params.id} deleted!`}).end();
+  
   } catch (err) {
     res.status(500).json(err);
   }
+  
 });
 
 module.exports = router;
