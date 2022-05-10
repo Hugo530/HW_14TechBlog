@@ -3,12 +3,19 @@ const { Post, Comment, User } = require('../models/');
 
 // get all posts for homepage
 router.get('/', async (req, res) => {
-  
-});
-
-// get single post
-router.get('/post/:id', async (req, res) => {
- 
+  try {
+    const postData = await this.Post.findAll({
+      include: [{all: true, nested: true}]
+    });
+    const loginStatus = req.session.loggenIn;
+    const posts = postData.map((post) => post.get({plain: true}));
+    res.render('all-posts', {
+      loginStatus,
+      posts
+    });
+  } catch (err) {
+    res.status(500).json(err);
+  }
 });
 
 router.get('/login', (req, res) => {
@@ -18,15 +25,45 @@ router.get('/login', (req, res) => {
   }
 
   res.render('login');
+
 });
 
-router.get('/signup', (req, res) => {
-  if (req.session.loggedIn) {
+router.get('/signup', (req,res) => {
+  if (req.sessions.loggedIn) {
     res.redirect('/');
     return;
   }
 
   res.render('signup');
+
 });
+
+
+
+// get single post
+router.get('/post/:id', async (req, res) => {
+ if(req.params.id) {
+   try {
+     const postData = await Post.findByPk(req.params.id, {
+       include: [{ all: true, nested: true}],
+     });
+     const loginStatus = req.session.loggedIn;
+     if(postData) {
+       const post = postData.get({plain: true});
+       res.render('single-post', {
+         ...post,
+         loginStatus
+       })
+     } else {
+       res.status(404).end();
+     }
+   } catch (err) {
+     console.log(err);
+     res.status(500).json(err);
+   }
+ }
+});
+
+
 
 module.exports = router;
