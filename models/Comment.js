@@ -10,22 +10,22 @@ Comment.init(
       allowNull: false,
       primaryKey: true,
       autoIncrement: true
-
     },
     body: {
       type: DataTypes.STRING,
       allowNull: false
     },
-    user_id: {
+    post_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      unique: false,
       references: {
-        model: 'user',
+        model: 'post',
         key: 'id',
-      }
+      },
     },
-    post_id: {
-      type: DataTypes.STRING,
+    user_id: {
+      type: DataTypes.INTEGER,
       allowNull: false,
       unique: false,
       references: {
@@ -36,10 +36,10 @@ Comment.init(
   },
   {
     sequelize,
-    timestamps: false,
+    timestamps: true,
     freezeTableName: true,
     underscored: true,
-    modelName: 'comment'
+    modelName: 'comment',
   }
 );
 
