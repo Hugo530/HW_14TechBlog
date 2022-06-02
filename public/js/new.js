@@ -4,16 +4,19 @@ const newFormHandler = async function(event) {
   const title = document.querySelector('input[name="post-title"]').value;
   const body = document.querySelector('textarea[name="post-body"]').value;
 
-  await fetch(`/api/post`, {
-    method: 'POST',
-    body: JSON.stringify({
-      title,
-      body,
-    }),
-    headers: { 'Content-Type': 'application/json' },
-  });
-
-  document.location.replace('/dashboard');
+  if(title && body) {
+    await fetch(`/api/post`, {
+      method: 'POST',
+      body: JSON.stringify({
+        title,
+        body,
+      }),
+      headers: { 'Content-Type': 'application/json' },
+    });
+    document.location.replace('/dashboard');
+  } else {
+    alert('Post must include title and body!');
+  }
 };
 
 document
