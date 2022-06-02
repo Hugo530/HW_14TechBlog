@@ -1,43 +1,35 @@
-
- <div class="posts list-group">
-
-    <div class="post card">
-      <div class="card-header flex-row justify-space-between">
-          <h2>{{title}}</h2>
-          <div class="flex-row">
-            <p>Posted by {{User.username}} </p>
-            <p> on {{createdAt}}</p>
-          </div>
-      </div>
-      <div class="card-body">
-          <p>{{body}}</p>
-      </div>
-  </div>
-  <div class="post card">
-      <form class="form" id="new-comment-form">
-    <div>
-      <label for="comment-body">Comment</label>
-      <textarea class="form-input" type="text" id="comment-body" name="comment-body"></textarea>
-      <button type="submit" class="btn">Add Comment</button>
+<div class="post" id="post" data-id="{{singlePost.id}}">
+    <div class="card">
+        <div class="card-header flex-row justify-space-between align-center">
+            <h2 class="col-7">
+                {{singlePost.title}}
+            </h2>
+            <div class="col-5 text-end">
+                Posted by {{singlePost.user.username}} on {{format_date singlePost.createdAt}}
+            </div>
+        </div>
+        <div class="card-body">
+            <p>
+                {{singlePost.body}}
+            </p>
+        </div>
     </div>
-  </form>
-  </div>
-  {{#if comments.[0]}}
-  {{#each comments as |comment|}}
-  <div class="card">
-    <div class="card-header"></div>
-    <div class="card-body">
-      <p>{{comment.body}}</p>
-      <div class="flex-row">
-      <p>-{{comment.User.username}} </p>
-      <p> on {{comment.createdAt}}</p>
-      </div>
 
+    {{#each singlePost.comments as |comment|}}
+    {{> comment-partial}}
+    {{/each}}
+
+    <div class="card">
+        <div class="card-header">
+            Post
+        </div>
+        <div class="card-body">
+            <form id="new-comment-form">
+                <textarea name="comment-body" placeholder="Leave a comment..."></textarea>
+                <button type="submit" class="btn">Submit</button>
+            </form>
+        </div>
     </div>
-  </div>
-  {{/each}}
-  {{/if}}
 </div>
 
-</div>
-<script src="/js/comment.js"></script>
+<script src="/js/comment.js"></script>>
