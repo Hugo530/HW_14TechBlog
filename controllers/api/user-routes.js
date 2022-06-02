@@ -13,7 +13,7 @@ router.post('/', async (req, res) => {
       req.session.username = newUser.username;
       req.session.loggedIn = true;
 
-      res.json(newUser);
+      res.redirect('/dashboard');
     });
   } catch (err) {
     res.status(500).json(err);
@@ -35,6 +35,7 @@ router.post('/login', async (req, res) => {
 
     const validPassword = user.checkPassword(req.body.password);
 
+    
     if (!validPassword) {
       res.status(400).json({ message: 'No user account found!' });
       return;
@@ -45,14 +46,14 @@ router.post('/login', async (req, res) => {
       req.session.username = user.username;
       req.session.loggedIn = true;
 
-      res.json({ user, message: 'You are now logged in!' });
+      res.redirect('/dashboard');
     });
   } catch (err) {
     res.status(400).json({ message: 'No user account found!' });
   }
 });
 
-router.post('/logout', (req, res) => {
+router.post('/logout', (req, res) => {  
   if (req.session.loggedIn) {
     req.session.destroy(() => {
       res.status(204).end();

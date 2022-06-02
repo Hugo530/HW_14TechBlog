@@ -1,30 +1,27 @@
 const router = require('express').Router();
-const { Post, User, Comment } = require('../models/');
+const { Post } = require('../models/');
 const withAuth = require('../utils/auth');
 
 router.get('/', withAuth, async (req, res) => {
+  
+  console.log(req.session.userId)
   try {
     const postData = await Post.findAll({
-      include: [{all: true, nested: true}],
       where: {
         user_id: req.session.userId,
       },
     });
-    if(postData) {
-      const posts = postData.map((post) => post.get({plain: true}));
 
-      res.render('all-posts-admin', {
-        layout:'dayboard',
-        posts,
-      });
-    }
+    const posts = postData.map((post) => post.get({ plain: true }));
 
+    res.render('all-posts-admin', {
+      layout: 'dashboard',
+      posts,
+    });
   } catch (err) {
     res.redirect('login');
   }
 });
-  
-  
 
 router.get('/new', withAuth, (req, res) => {
   res.render('new-post', {
@@ -40,6 +37,7 @@ router.get('/edit/:id', withAuth, async (req, res) => {
       const post = postData.get({ plain: true });
 
       res.render('edit-post', {
+        layout: 'dashboard',
         post,
       });
     } else {
@@ -49,6 +47,5 @@ router.get('/edit/:id', withAuth, async (req, res) => {
     res.redirect('login');
   }
 });
-
 
 module.exports = router;

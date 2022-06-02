@@ -4,16 +4,55 @@ const { Post, Comment, User } = require('../models/');
 // get all posts for homepage
 router.get('/', async (req, res) => {
   try {
-    const postData = await this.Post.findAll({
-      include: [{all: true, nested: true}]
+    const dbPostData = await Post.findAll({
+      include: [
+        {
+          model: User,
+          attributes: ['username']
+        }
+      ]
     });
-    const loginStatus = req.session.loggenIn;
-    const posts = postData.map((post) => post.get({plain: true}));
+
+    const posts = dbPostData.map(post => post.get({ plain: true }));
+
     res.render('all-posts', {
-      loginStatus,
-      posts
+      posts,
+      loggedIn: req.session.loggedIn
     });
   } catch (err) {
+    console.error(err);
+    res.status(500).json(err);
+  }
+});
+
+// get single post
+router.get('/post/:id', async (req, res) => {
+  try {
+    const dbPostData = await Post.findByPk(req.params.id, {
+      include: [
+        {
+          model: User,
+          attributes: ['username']
+        },
+        {
+          model: Comment,
+          attributes: ['body', 'createdAt'],
+          include: {
+            model: User,
+            attributes: ['username']
+          }
+        }
+      ]
+    })
+
+    const singlePost = dbPostData.get({ plain:true });
+
+    res.render('single-post', {
+      singlePost,
+      loggedIn: req.session.loggedIn
+    });
+  } catch (err) {
+    console.error(err);
     res.status(500).json(err);
   }
 });
@@ -25,45 +64,15 @@ router.get('/login', (req, res) => {
   }
 
   res.render('login');
-
 });
 
-router.get('/signup', (req,res) => {
-  if (req.sessions.loggedIn) {
+router.get('/signup', (req, res) => {
+  if (req.session.loggedIn) {
     res.redirect('/');
     return;
   }
 
   res.render('signup');
-
 });
-
-
-
-// get single post
-router.get('/post/:id', async (req, res) => {
- if(req.params.id) {
-   try {
-     const postData = await Post.findByPk(req.params.id, {
-       include: [{ all: true, nested: true}],
-     });
-     const loginStatus = req.session.loggedIn;
-     if(postData) {
-       const post = postData.get({plain: true});
-       res.render('single-post', {
-         ...post,
-         loginStatus
-       })
-     } else {
-       res.status(404).end();
-     }
-   } catch (err) {
-     console.log(err);
-     res.status(500).json(err);
-   }
- }
-});
-
-
 
 module.exports = router;
